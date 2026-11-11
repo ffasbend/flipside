@@ -623,10 +623,13 @@ the package folder with `typst compile --root . examples/<name>.typ`.
   caption[#raw("examples/" + name + ".typ"): first sheet, and the list]
 })
 
-#example("vocabulary", "Vocabulary from a CSV file")[
-  German–French words read from `vocabulary.csv`, DIN A7 cards (8 per sheet,
-  text at 18 pt), a stripe per theme, German hyphenation and quotes on the
-  question side, French on the answer side.
+#example("vocabulary", "Vocabulary from a CSV file, both ways")[
+  German–French words read from `vocabulary.csv`, printed both ways
+  (`dir: "both"`, the direction in the header): `laut [? (m/f)]` asks for both
+  forms and is just "laut" as the answer; `l'ascenseur, [! un ascenseur]`
+  shows the article only in the answer; a `dir` column keeps "die Möbel" one
+  way. DIN A7 cards (8 per sheet, text at 18 pt), a stripe per theme, each
+  side in its own language.
 ]
 
 #example("maths", "Maths")[

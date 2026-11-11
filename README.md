@@ -175,7 +175,7 @@ justified).
 ## Examples
 
 The [examples](https://github.com/ffasbend/flipside/tree/main/examples) folder holds complete decks: a German–French
-vocabulary from CSV, maths with formulas, chemical elements on business-card
+vocabulary from CSV learnt both ways with hints, maths with formulas, chemical elements on business-card
 sheets, US index cards, upright cards of your own size.
 
 ## Development

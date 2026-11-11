@@ -1,0 +1,38 @@
+# Runs tests/run.sh on every push and pull request: every example, the
+# template and the test decks compile without errors or warnings, the error
+# messages are right, and every page looks exactly like its reference image.
+#
+# Typst is the version in typst.toml (`compiler`), on ARM Linux like the dev
+# container the reference images were made in, so the pixels match. When a
+# test fails, the pages it made are attached to the run (tests-out).
+name: Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Typst
+        run: |
+          version=$(sed -n 's/^compiler = "\(.*\)"/\1/p' typst.toml)
+          curl -sSfL "https://github.com/typst/typst/releases/download/v$version/typst-aarch64-unknown-linux-musl.tar.xz" | tar -xJ
+          echo "$PWD/typst-aarch64-unknown-linux-musl" >> "$GITHUB_PATH"
+
+      - name: Typst version
+        run: typst --version
+
+      - name: Tests
+        run: sh tests/run.sh
+
+      - name: Pages of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-out
+          path: tests/out/

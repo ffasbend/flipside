@@ -27,11 +27,13 @@ failed=0; passed=0
 ok()   { passed=$((passed + 1)); }
 fail() { failed=$((failed + 1)); echo "FAIL  $*"; }
 
-# The template imports @local/flipside: give Typst this folder as that package
+# The template imports @preview/flipside: give Typst this folder as that package
+# (also as @local/flipside), so nothing is downloaded
 PKG=$(mktemp -d)
 trap 'rm -rf "$PKG"' EXIT
 VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' typst.toml)
-mkdir -p "$PKG/local/flipside"
+mkdir -p "$PKG/preview/flipside" "$PKG/local/flipside"
+ln -s "$PWD" "$PKG/preview/flipside/$VERSION"
 ln -s "$PWD" "$PKG/local/flipside/$VERSION"
 
 # compile NAME FILE [typst options...]: must succeed without any message

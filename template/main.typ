@@ -1,4 +1,4 @@
-#import "@local/flipside:0.1.0": *
+#import "@preview/flipside:0.1.0": *
 
 // "cards": the sheets to print; "list": one card per row (question | answer), to check
 #let layout = "cards"

@@ -18,7 +18,9 @@ question on the front and its answer on the back.
 - **Text that is too large is shrunk** to fit, and marked in the list.
 - **Reprint** single cards without the rest of the deck.
 
-The [manual](https://github.com/ffasbend/flipside/blob/main/docs/manual.pdf) explains everything, with many examples.
+The [manual](https://github.com/ffasbend/flipside/releases/download/v0.1.0/flipside-manual-0.1.0.pdf)
+(PDF, attached to each [release](https://github.com/ffasbend/flipside/releases)) explains
+everything, with many examples.
 
 ## Getting started
 
@@ -154,6 +156,10 @@ sheets, US index cards, upright cards of your own size.
   size and layout, checks the error messages and compares every page with the
   reference images (`--update` makes them anew).
 - `docs/build.sh` renders the pictures and builds `docs/manual.pdf`.
+- A new version: set `version` in `typst.toml` (and the README links), build
+  the manual, commit, then `git tag v<version> && git push origin v<version>`.
+  GitHub then creates the release with the manual attached
+  (`.github/workflows/release.yml`).
 - To use a local copy, link this folder as
   `~/Library/Application Support/typst/packages/local/flipside/0.1.0` (Linux:
   `~/.local/share/typst/packages/local/flipside/0.1.0`) and import

@@ -1,0 +1,40 @@
+# Creates the GitHub release of a version when its tag is pushed:
+#
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# The tag must match `version` in typst.toml. The release gets the manual
+# (docs/manual.pdf, as committed) as flipside-manual-<version>.pdf; the
+# README links to it, because the package on Typst Universe leaves docs/ out.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # to create the release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' typst.toml)
+          if [ "$tag" != "$version" ]; then
+            echo "Tag v$tag does not match version $version in typst.toml" >&2
+            exit 1
+          fi
+          cp docs/manual.pdf "flipside-manual-$version.pdf"
+
+      - name: Create the release with the manual
+        uses: softprops/action-gh-release@v2
+        with:
+          name: flipside ${{ github.ref_name }}
+          files: flipside-manual-*.pdf
+          body: |
+            The manual of this version is attached: the PDF below.
+            Use the package with `#import "@preview/flipside:${{ github.ref_name }}": *` (without the "v").

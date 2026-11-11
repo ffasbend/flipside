@@ -1,0 +1,7 @@
+.DS_Store
+# PDFs made while editing (the manual is kept)
+*.pdf
+!docs/manual.pdf
+# made by tests/run.sh and docs/build.sh
+tests/out/
+docs/img/

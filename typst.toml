@@ -1,0 +1,18 @@
+[package]
+name = "flipside"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["Frank Fasbender <ffasbend@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/ffasbend/flipside"
+description = "Double-sided flash cards that line up when printed duplex: DIN, US, business-card or custom sizes on A4 or Letter, with a list to check them and a calibration sheet for the printer."
+keywords = ["flashcards", "cards", "duplex", "learning", "education", "vocabulary", "index cards", "csv"]
+categories = ["components", "layout"]
+disciplines = ["education"]
+compiler = "0.13.0"
+exclude = ["thumbnail-list.png", "examples", "docs", "tests", "*.pdf"]
+
+[template]
+path = "template"
+entrypoint = "main.typ"
+thumbnail = "thumbnail.png"

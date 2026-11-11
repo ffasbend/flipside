@@ -5,7 +5,7 @@
 #   tests/run.sh --update   make the reference images anew (check them first!)
 #
 # Uses `typst` from the PATH, or the one in $TYPST. The reference images in
-# tests/ref were made with Typst 0.13.1; another Typst version may draw some
+# tests/ref were made with Typst 0.15.1 (the package also works with 0.13); another Typst version may draw some
 # pixels differently: then look at tests/out and run with --update.
 #
 # What is tested:

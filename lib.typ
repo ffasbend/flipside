@@ -396,8 +396,10 @@
     if card != none {
       stripe-on(card, left)
       slots(header, footer, card, 5mm * k, 3.5mm * k)
-      block(width: 100%, height: 100%, inset: front-in,
-        align(center + horizon, fitted(card.q, room(front-in), q-lang)))
+      // placed, so that content too large for the card (fit: false) can
+      // never make the card, and with it the row of the sheet, larger
+      place(top + left, block(width: card-w, height: card-h, inset: front-in,
+        align(center + horizon, fitted(card.q, room(front-in), q-lang))))
     }
   })
 
@@ -408,8 +410,10 @@
     if card != none {
       stripe-on(card, right)
       slots(back-header, back-footer, card, 3.5mm * k, 3.5mm * k)
-      block(width: 100%, height: 100%, inset: back-in,
-        align(center + horizon, fitted(card.a, room(back-in), a-lang)))
+      // placed, so that content too large for the card (fit: false) can
+      // never make the card, and with it the row of the sheet, larger
+      place(top + left, block(width: card-w, height: card-h, inset: back-in,
+        align(center + horizon, fitted(card.a, room(back-in), a-lang))))
     }
   })
 

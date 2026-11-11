@@ -1,3 +1,6 @@
+// flipside – Frank Fasbender <ffasbend@gmail.com>, MIT licence
+// https://github.com/ffasbend/flipside
+//
 // Recto/verso flashcards on A4 or Letter sheets, in DIN, US, business-card
 // or custom card sizes.
 // Odd pages = questions, even pages = answers.

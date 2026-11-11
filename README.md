@@ -159,6 +159,11 @@ sheets, US index cards, upright cards of your own size.
   `~/.local/share/typst/packages/local/flipside/0.1.0`) and import
   `@local/flipside:0.1.0`.
 
-## License
+## Author and license
+
+Frank Fasbender, <ffasbend@gmail.com> ·
+[github.com/ffasbend/flipside](https://github.com/ffasbend/flipside)
+(questions, ideas and bug reports: please open an
+[issue](https://github.com/ffasbend/flipside/issues)).
 
 MIT, © 2026 Frank Fasbender

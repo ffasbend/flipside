@@ -65,7 +65,9 @@
   #v(6mm)
   #text(size: 11pt)[Manual · version #version]
   #v(2mm)
-  #text(size: 10pt)[Frank Fasbender]
+  #text(size: 10pt)[Frank Fasbender · #link("mailto:ffasbend@gmail.com")[ffasbend\@gmail.com]]
+  #v(1mm)
+  #text(size: 10pt, link("https://github.com/ffasbend/flipside")[github.com/ffasbend/flipside])
 ]
 #v(12mm)
 #align(center, shot("img/template-1.png", width: 140mm))

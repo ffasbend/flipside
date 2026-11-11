@@ -63,6 +63,90 @@
   rgb("#56B4E9"), rgb("#D55E00"), rgb("#F0E442"), rgb("#999999"),
 )
 
+// ── Items, hints and notes ──
+// These functions only mark their content with a label. `flipside` shows or
+// hides the marked parts depending on the role of the side (question or
+// answer), and the MyCards app reads the same labels (layout "report").
+
+// Several items on one side. `kind` is what happens when the side is the
+// question ("all": one card, items together; "any": one card per item), `a`
+// what happens when it is the answer ("all": all needed; "any": any one right).
+#let _items(kind, args) = {
+  let a = args.named().at("a", default: kind)
+  assert(args.named().keys().all(k => k == "a"),
+    message: kind + " only takes the items and a: \"all\" or \"any\"")
+  assert(a in ("all", "any"), message: "a: of " + kind + " must be \"all\" or \"any\", not \"" + str(a) + "\"")
+  let items = args.pos()
+  assert(items.len() >= 2, message: kind + " needs at least 2 items: " + kind + "[…][…]")
+  let name = if a == kind { "fs-" + kind } else { "fs-" + kind + "-" + a }
+  [#block(items.map(i => [#block(i)<fs-item>]).join())#label(name)]
+}
+/// Items that belong together: as the question shown together on one card, as
+/// the answer all needed. `all(a: "any")[…][…]`: as the answer any one is right.
+#let all(..args) = _items("all", args)
+/// Alternatives: as the question one card per item, as the answer any one is
+/// right. `any(a: "all")[…][…]`: as the answer all are needed.
+#let any(..args) = _items("any", args)
+
+/// Shown only when the side is the question. For plain text `[? …]` also works.
+#let q-only(body) = [#box(body)<fs-q-only>]
+/// Shown only when the side is the answer. For plain text `[! …]` also works.
+#let a-only(body) = [#box(body)<fs-a-only>]
+/// A note: on a line of its own, shown in both roles (not part of the answer).
+#let note(body) = [#block(body)<fs-note>]
+/// A note shown only when the side is the question.
+#let q-note(body) = [#block(body)<fs-q-note>]
+/// A note shown only when the side is the answer.
+#let a-note(body) = [#block(body)<fs-a-note>]
+
+// The functions above, for cells of a CSV file read as markup (markup: true)
+#let _markup-scope = (
+  all: all, any: any, q-only: q-only, a-only: a-only,
+  note: note, q-note: q-note, a-note: a-note,
+  small: small, tiny: tiny, block-left: block-left,
+)
+
+// A side as shown in a role: "q" (the side is asked) or "a" (the side is the
+// answer). Hidden parts disappear; `[? …]` / `[! …]` lose their brackets, and
+// a comma or space before a hidden one goes with it.
+#let _in-role(role, body) = {
+  let shown(r) = r == role
+  show <fs-q-only>: it => if shown("q") { it }
+  show <fs-a-only>: it => if shown("a") { it }
+  show <fs-note>: it => text(size: 0.85em, it)
+  show <fs-q-note>: it => if shown("q") { text(size: 0.85em, it) }
+  show <fs-a-note>: it => if shown("a") { text(size: 0.85em, it) }
+  show regex("[,;]?\s*\[\?[^\]]*\]"): it => if shown("q") {
+    it.text.replace(regex("\[\?\s*"), "").replace(regex("\s*\]$"), "")
+  }
+  show regex("[,;]?\s*\[![^\]]*\]"): it => if shown("a") {
+    it.text.replace(regex("\[!\s*"), "").replace(regex("\s*\]$"), "")
+  }
+  body
+}
+
+// A side written with all / any: (q: "all"|"any", a: "all"|"any", items: (…)),
+// or none. `[#all[…][…]]` (the group alone in a content block) counts too.
+#let _items-of(side) = {
+  if type(side) != content { return none }
+  if side.func() == [].func() {
+    let parts = side.children.filter(c => c != [ ])
+    if parts.len() != 1 { return none }
+    side = parts.first()
+  }
+  if not side.has("label") { return none }
+  let name = str(side.label)
+  if not (name.starts-with("fs-all") or name.starts-with("fs-any")) { return none }
+  let kinds = name.split("-")
+  let body = side.body
+  let children = if body.func() == [].func() { body.children } else { (body,) }
+  (
+    q: kinds.at(1),
+    a: kinds.at(2, default: kinds.at(1)),
+    items: children.filter(c => c.has("label") and str(c.label) == "fs-item").map(c => c.body),
+  )
+}
+
 /// Lays out the cards as printable sheets, or as a list to check them.
 ///
 /// - cards (array): the cards, each `(q: […], a: […])`. An entry without `q`
@@ -101,7 +185,13 @@
 /// - only (none, str, array, function): print only some cards, e.g. "5-12,17",
 ///   `(3, 8)` or `c => c.theme == "Cardinal"`. Numbers stay those of the whole
 ///   deck. `--input only=5-12,17` wins.
-/// - layout (str): "cards", "list" or "calibrate";
+/// - dir (str): "forward" (side q is asked, default), "reverse" (side a is
+///   asked) or "both" (every card twice, once each way); a card's own `dir`
+///   wins. `--input dir=both` wins over the deck.
+/// - count (function): what the question shows when more than 2 items of the
+///   answer are needed, `n => …`; default "(3)".
+/// - layout (str): "cards", "list", "calibrate" or "report" (the cards for the
+///   MyCards app, as metadata <flipside-cards>, and one page per picture);
 ///   `typst compile --input layout=list` wins.
 /// - card (str, dictionary): "DIN A8" (or "A8"), "DIN A7", "DIN A6", "DIN A5",
 ///   "US 3x5", "US 4x6", "US business", "EU business", or your own size:
@@ -136,10 +226,15 @@
   card: "A8",
   paper: auto,
   orientation: "landscape",
+  dir: "forward",
+  count: n => text(size: 0.8em)[(#n)],
 ) = {
   let layout = sys.inputs.at("layout", default: layout)
-  assert(layout in ("cards", "list", "calibrate"),
-    message: "layout must be \"cards\", \"list\" or \"calibrate\", not \"" + layout + "\"")
+  assert(layout in ("cards", "list", "calibrate", "report"),
+    message: "layout must be \"cards\", \"list\", \"calibrate\" or \"report\", not \"" + layout + "\"")
+  let dir = sys.inputs.at("dir", default: dir)
+  let directions = ("forward", "reverse", "both")
+  assert(dir in directions, message: "dir must be \"forward\", \"reverse\" or \"both\", not \"" + str(dir) + "\"")
   // ── The card and the sheet ──
   let card = sys.inputs.at("card", default: card)
   let spec = if type(card) == dictionary {
@@ -237,7 +332,7 @@
     let s = v.replace("\r\n", "\n").trim()
     if s == "" { [] }
     else {
-      let line(l) = if markup { eval(l.trim(), mode: "markup") } else { [#l.trim()] }
+      let line(l) = if markup { eval(l.trim(), mode: "markup", scope: _markup-scope) } else { [#l.trim()] }
       s.split("\n").map(line).join(linebreak())
     }
   }
@@ -261,10 +356,9 @@
     entries + ((q: q, a: a),)
   }
 
-  // Each card gets the fields of the entries above it, its number and the total
+  // Each card gets the fields of the entries above it (theme, dir, …)
   let fields = (:)
   let prepared = ()
-  let n = 0
   let items = ()
   for c in cards { items += normalize(c) }
   for c in items {
@@ -272,13 +366,92 @@
       fields += c
       continue
     }
-    if type(c) != dictionary { prepared.push(c); continue }
-    let blank = c.q == [] and c.a == []
+    if type(c) != dictionary { continue }
+    prepared.push(fields + (q: [], a: []) + c)
+  }
+
+  // Language of the question side and of the answer side
+  let (q-lang, a-lang) = if type(lang) == dictionary {
+    assert(lang.keys().all(x => x in ("q", "a")), message: "lang must be \"fr\" or (q: \"de\", a: \"fr\")")
+    (lang.at("q", default: "en"), lang.at("a", default: "en"))
+  } else { (lang, lang) }
+
+  // For the MyCards app: the cards as written, and every picture on a page of
+  // its own (in the order of the cards: side q, then side a), like its own
+  // template for the older flashcards.typ (mycards-app typstProject.ts).
+  if layout == "report" {
+    let picture-funcs = ("context", "image", "layout")
+    let pictures(c) = {
+      if type(c) != content { return () }
+      if repr(c.func()) in picture-funcs { return (c,) }
+      let out = ()
+      for (k, v) in c.fields() {
+        if type(v) == content { out += pictures(v) }
+        else if type(v) == array { for x in v { out += pictures(x) } }
+      }
+      out
+    }
+    let all-pictures = prepared.map(c => pictures(c.q) + pictures(c.a)).flatten()
+    return {
+      set page(width: auto, height: auto, margin: 1mm)
+      [#metadata((
+        format: 1,
+        title: title,
+        lang: (q: q-lang, a: a-lang),
+        dir: dir,
+        cards: prepared,
+      )) <flipside-cards>]
+      for (i, p) in all-pictures.enumerate() { if i > 0 { pagebreak() }; p }
+    }
+  }
+
+  // The printed cards: every card once per direction, and once per item when
+  // the asked side is `any`. Each gets the content of its front (the asked
+  // side, in its question role) and of its back (the other side, as answer).
+  let expanded = ()
+  for c in prepared {
+    if c.q == [] and c.a == [] {
+      expanded.push(c + (front: [], back: [], front-lang: q-lang, back-lang: a-lang, direction: none))
+      continue
+    }
+    let d = c.at("dir", default: dir)
+    assert(d in directions, message: "dir must be \"forward\", \"reverse\" or \"both\", not \"" + str(d) + "\"")
+    let ways = if d == "forward" { (("q", "a"),) } else if d == "reverse" { (("a", "q"),) }
+      else { (("q", "a"), ("a", "q")) }
+    for (asked, other) in ways {
+      let question = c.at(asked)
+      let answer = c.at(other)
+      let q-items = _items-of(question)
+      let a-items = _items-of(answer)
+      let questions = if q-items != none and q-items.q == "any" { q-items.items } else { (question,) }
+      // any one right: the items on one line, " / " between them
+      if a-items != none and a-items.a == "any" { answer = a-items.items.join(" / ") }
+      // more than 2 items needed: the question says how many
+      let needed = if a-items != none and a-items.a == "all" and a-items.items.len() > 2 {
+        block(count(a-items.items.len()))
+      } else { [] }
+      let (front-lang, back-lang) = if asked == "q" { (q-lang, a-lang) } else { (a-lang, q-lang) }
+      for qq in questions {
+        expanded.push(c + (
+          front: _in-role("q", qq) + needed,
+          back: _in-role("a", answer),
+          front-lang: front-lang,
+          back-lang: back-lang,
+          direction: if asked == "q" { "forward" } else { "reverse" },
+        ))
+      }
+    }
+  }
+  // … then their number and the total (blank cards have none)
+  let n = 0
+  let numbered = ()
+  for c in expanded {
+    let blank = c.front == [] and c.back == []
     if not blank { n += 1 }
-    prepared.push(fields + (number: if blank { none } else { n }) + c)
+    numbered.push(c + (number: if blank { none } else { n }))
   }
   let total = n
-  let cards = prepared.map(c => if type(c) == dictionary { c + (total: total) } else { c })
+  let cards = numbered.map(c => c + (total: total))
 
   // Colour of the stripe, from all cards (so it stays the same with `only`)
   let themes = ()
@@ -315,12 +488,6 @@
     }
     cards = cards.filter(c => type(c) == dictionary and c.number != none and keep(c))
   }
-
-  // Language of the question side and of the answer side
-  let (q-lang, a-lang) = if type(lang) == dictionary {
-    assert(lang.keys().all(x => x in ("q", "a")), message: "lang must be \"fr\" or (q: \"de\", a: \"fr\")")
-    (lang.at("q", default: "en"), lang.at("a", default: "en"))
-  } else { (lang, lang) }
 
   set text(font: font, size: size, lang: q-lang)
   set par(leading: 0.55em)
@@ -392,28 +559,28 @@
 
   // The question side of a card, as printed (none = empty place on the sheet).
   let front(card) = box(width: card-w, height: card-h, stroke: stroke, {
-    set text(lang: q-lang)
+    set text(lang: if card != none { card.front-lang } else { q-lang })
     if card != none {
       stripe-on(card, left)
       slots(header, footer, card, 5mm * k, 3.5mm * k)
       // placed, so that content too large for the card (fit: false) can
       // never make the card, and with it the row of the sheet, larger
       place(top + left, block(width: card-w, height: card-h, inset: front-in,
-        align(center + horizon, fitted(card.q, room(front-in), q-lang))))
+        align(center + horizon, fitted(card.front, room(front-in), card.front-lang))))
     }
   })
 
   // The answer side of a card, as printed; `border` draws its outline.
   let back(card, border: back-borders) = box(width: card-w, height: card-h,
     stroke: if border { stroke } else { none }, {
-    set text(lang: a-lang)
+    set text(lang: if card != none { card.back-lang } else { a-lang })
     if card != none {
       stripe-on(card, right)
       slots(back-header, back-footer, card, 3.5mm * k, 3.5mm * k)
       // placed, so that content too large for the card (fit: false) can
       // never make the card, and with it the row of the sheet, larger
       place(top + left, block(width: card-w, height: card-h, inset: back-in,
-        align(center + horizon, fitted(card.a, room(back-in), a-lang))))
+        align(center + horizon, fitted(card.back, room(back-in), card.back-lang))))
     }
   })
 
@@ -447,8 +614,8 @@
     let side(body) = scale(f * 100%, reflow: true, body)
     // Shrunk (fit: true) or overflowing (fit: false) sides are marked
     let mark(card) = context {
-      let fq = fit-factor(card.q, room(front-in), q-lang)
-      let fa = fit-factor(card.a, room(back-in), a-lang)
+      let fq = fit-factor(card.front, room(front-in), card.front-lang)
+      let fa = fit-factor(card.back, room(back-in), card.back-lang)
       let f = calc.min(fq, fa)
       if f < 1 {
         let which = if fq < 1 and fa < 1 [Q A] else if fq < 1 [Q] else [A]

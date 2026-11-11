@@ -1,4 +1,4 @@
-#import "@preview/flipside:0.1.0": *
+#import "@preview/flipside:0.2.0": *
 
 #flipside(
   stripe: auto,

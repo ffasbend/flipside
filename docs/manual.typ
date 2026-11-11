@@ -1,6 +1,6 @@
 // The flipside manual. Build it with docs/build.sh (renders the images first).
 
-#let version = "0.1.0"
+#let version = "0.2.0"
 
 #set document(title: "flipside – manual", author: "Frank Fasbender")
 #set page(paper: "a4", margin: (x: 22mm, top: 22mm, bottom: 24mm),
@@ -106,20 +106,20 @@ Once the package is on Typst Universe, nothing has to be installed: the import
 below downloads it the first time you compile.
 
 ```typ
-#import "@preview/flipside:0.1.0": *
+#import "@preview/flipside:0.2.0": *
 ```
 
 To start a new deck from the template:
 
 ```sh
-typst init @preview/flipside:0.1.0 my-cards
+typst init @preview/flipside:0.2.0 my-cards
 ```
 
 #tip[*Before publication, or to use your own copy:* put the package folder into
 Typst's local package folder (macOS:
-`~/Library/Application Support/typst/packages/local/flipside/0.1.0`, Linux:
-`~/.local/share/typst/packages/local/flipside/0.1.0`) and import
-`@local/flipside:0.1.0` instead. A relative import such as
+`~/Library/Application Support/typst/packages/local/flipside/0.2.0`, Linux:
+`~/.local/share/typst/packages/local/flipside/0.2.0`) and import
+`@local/flipside:0.2.0` instead. A relative import such as
 `#import "flipside/lib.typ": *` works too, and also in the Typst web app.]
 
 == A first deck
@@ -222,6 +222,74 @@ directly: Typst reads CSV files itself.
       + ((theme: "Extra"), (q: [Hallo], a: [Salut]))
   )
   ```
+
+= Both directions, items and hints <roles>
+
+A card can be studied both ways: German → French and French → German. Each
+side then has two *roles*: as the *question* it is what is asked, as the
+*answer* what is checked. flipside prints every part of a side as it should be
+in that role, so one list gives correct cards both ways. The MyCards app reads
+the same marks.
+
+#code("snippets/roles.typ")
+
+#front-back("roles", rows: 2)
+
+== Directions
+
+#table(columns: 2, stroke: 0.4pt + luma(180), inset: 5pt,
+  [*Write*], [*Cards*],
+  [`dir: "forward"` (default)], [side `q` is asked, `a` is the answer],
+  [`dir: "reverse"`], [side `a` is asked, `q` is the answer],
+  [`dir: "both"`], [every card twice, once each way],
+)
+
+`dir` is given to `#flipside(…)` for the deck, and in a card for that card
+only; `(dir: "forward"),` as an entry of its own holds for the cards below
+it, like a theme. `--input dir=both` chooses it when compiling. Every printed
+card has `c.direction` (`"forward"` or `"reverse"`) for the slots, as in the
+footer above; `c.front-lang` and `c.back-lang` are its languages.
+
+== Several items: `all` and `any`
+
+#table(columns: 3, stroke: 0.4pt + luma(180), inset: 5pt,
+  [*Write*], [*Side is the question*], [*Side is the answer*],
+  [`all[…][…]`], [one card, items together], [*all* needed; on lines of their own],
+  [`any[…][…]`], [*one card per item*], [*any one* is right; "… / …"],
+  [`any(a: "all")[…][…]`], [one card per item], [all needed],
+  [`all(a: "any")[…][…]`], [one card, items together], [any one is right],
+)
+
+- When more than 2 items are needed, the question says how many: "(3)".
+  `count: n => [(#n réponses)]` changes the text.
+- A comma never splits anything: `[bruyant, bruyante]` is *one* answer, the
+  normal way to write forms that belong together.
+
+== Shown only as question, or only as answer
+
+#table(columns: 3, stroke: 0.4pt + luma(180), inset: 5pt,
+  [*Write*], [*Side is the question*], [*Side is the answer*],
+  [`[? …]` (plain text)], [shown, without brackets], [–],
+  [`[! …]` (plain text)], [–], [shown, without brackets],
+  [`#q-only[…]`], [shown], [–],
+  [`#a-only[…]`], [–], [shown],
+  [`#note[…]`], [shown, on its own line], [shown, on its own line],
+  [`#q-note[…]`], [shown, on its own line], [–],
+  [`#a-note[…]`], [–], [shown, on its own line],
+)
+
+- `[? …]` and `[! …]` are typed as normal text, as in the text files of the
+  MyCards app; the text inside must be plain. For maths, bold or a picture use
+  `#q-only[…]` / `#a-only[…]`. Brackets in maths (`$[0, 1]$`) are never taken
+  for them.
+- A comma or space before a hidden `[? …]` / `[! …]` goes with it:
+  "der Lift, [? ein Lift]" as the answer is "der Lift".
+
+== For the MyCards app
+
+The app reads flipside decks with `--input layout=report`: the cards as
+written (with `dir`, themes and all marks) as metadata `<flipside-cards>`,
+and every picture on a page of its own. Nothing has to be changed in the deck.
 
 = Header and footer <slots>
 
@@ -480,6 +548,7 @@ it always wins over the file:
   [`paper`], [`--input paper=us-letter`],
   [`orientation`], [`--input orientation=portrait`],
   [`only`], [`--input only=5-12,17`],
+  [`dir`], [`--input dir=both`],
   [`back-offset`], [`--input back-offset=0.8mm,-0.5mm` (plain numbers are mm)],
 )
 
@@ -521,14 +590,17 @@ handy in the Typst web app:
   [`markup`], [`false`], [read strings (CSV cells) as Typst markup],
   [`back-offset`], [`(x: 0mm, y: 0mm)`], [shift of the answer pages for the printer],
   [`only`], [`none`], [only some cards: `"5-12,17"`, `(3, 8)` or `c => bool`],
-  [`layout`], [`"cards"`], [`"cards"`, `"list"` or `"calibrate"`],
+  [`layout`], [`"cards"`], [`"cards"`, `"list"`, `"calibrate"` or `"report"` (for the MyCards app)],
   [`card`], [`"A8"`], [a size name (@sizes) or `(width:, height:, cols:, rows:, gap:, margin:)`],
   [`paper`], [`auto`], [`"a4"`, `"us-letter"`, `"a3"`, `"a5"`, `"us-legal"`],
   [`orientation`], [`"landscape"`], [`"portrait"` for upright cards],
+  [`dir`], [`"forward"`], [`"reverse"` or `"both"` (@roles)],
+  [`count`], [`n => [(n)]`], [what the question shows when more than 2 items are needed],
 )
 
 *Helpers:* `small[…]` (72 %), `tiny[…]` (60 %), `block-left[…]` (left-aligned,
-justified). *Values:* `card-sizes` (the size table), `papers`,
+justified). *Items, hints and notes* (@roles): `all`, `any`, `q-only`,
+`a-only`, `note`, `q-note`, `a-note`. *Values:* `card-sizes` (the size table), `papers`,
 `stripe-palette` (the colours of `stripe: auto`).
 
 #set par(justify: true)

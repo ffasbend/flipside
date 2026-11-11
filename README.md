@@ -17,15 +17,18 @@ question on the front and its answer on the back.
 - **Coloured stripes** per theme, to sort the cut cards.
 - **Text that is too large is shrunk** to fit, and marked in the list.
 - **Reprint** single cards without the rest of the deck.
+- **Both directions** (`dir: "both"`), **several items** (`all`, `any`) and
+  **hints** shown only as question or only as answer (`[? …]`, `[! …]`), e.g.
+  for vocabulary.
 
-The [manual](https://github.com/ffasbend/flipside/releases/download/v0.1.0/flipside-manual-0.1.0.pdf)
+The [manual](https://github.com/ffasbend/flipside/releases/download/v0.2.0/flipside-manual-0.2.0.pdf)
 (PDF, attached to each [release](https://github.com/ffasbend/flipside/releases)) explains
 everything, with many examples.
 
 ## Getting started
 
 ```typst
-#import "@preview/flipside:0.1.0": *
+#import "@preview/flipside:0.2.0": *
 
 #flipside((
   (q: [France], a: [Paris]),
@@ -37,7 +40,7 @@ everything, with many examples.
 or start from the template:
 
 ```sh
-typst init @preview/flipside:0.1.0 my-cards
+typst init @preview/flipside:0.2.0 my-cards
 ```
 
 Page 1 holds the questions with cutting lines, page 2 the answers, mirrored so
@@ -92,6 +95,27 @@ der Sänger,le chanteur,
 Columns `q` and `a`, any other column becomes a field; an empty cell keeps the
 value above; a line break in a cell is a line break on the card.
 
+## Both directions, items and hints
+
+```typst
+#flipside(
+  lang: (q: "de", a: "fr"),
+  dir: "both",                                           // every card both ways
+  (
+    (q: [laut [? (m/f)]], a: [bruyant, bruyante]),
+    (q: [der Lift, [? ein Lift]], a: [l'ascenseur, [! un ascenseur]]),
+    (q: [der Kühlschrank], a: any[le réfrigérateur][le frigo]),
+    (q: [die Möbel #q-note[Plural]], a: all[les meubles][le mobilier]),
+  ),
+)
+```
+
+- `[? …]` is shown only when its side is asked, `[! …]` only when it is the
+  answer (`#q-only[…]` / `#a-only[…]` for maths or bold).
+- `all[…][…]`: as the question one card, as the answer all needed;
+  `any[…][…]`: as the question one card per item, as the answer any one right.
+- `#note[…]`, `#q-note[…]`, `#a-note[…]`: notes on a line of their own.
+
 ## Card sizes
 
 | `card:` | Card | Paper | Per sheet |
@@ -120,7 +144,7 @@ also give `cols`, `rows`, `gap` and `margin` to match a perforated sheet.
 
 Everything that changes between printouts can be chosen when compiling, and
 wins over the file: `--input layout=…`, `card=…`, `paper=…`,
-`orientation=…`, `only=…`, `back-offset=…`.
+`orientation=…`, `only=…`, `back-offset=…`, `dir=…`.
 
 ## Parameters
 
@@ -138,7 +162,9 @@ wins over the file: `--input layout=…`, `card=…`, `paper=…`,
 | `markup` | `false` | read CSV cells as Typst markup |
 | `back-offset` | `(x: 0mm, y: 0mm)` | shift of the answer pages |
 | `only` | `none` | `"5-12,17"`, `(3, 8)` or `c => bool` |
-| `layout` | `"cards"` | `"cards"`, `"list"`, `"calibrate"` |
+| `layout` | `"cards"` | `"cards"`, `"list"`, `"calibrate"`, `"report"` (for the MyCards app) |
+| `dir` | `"forward"` | `"reverse"` or `"both"`; a card's own `dir` wins |
+| `count` | `n => [(n)]` | shown on the question when more than 2 items are needed |
 | `card`, `paper`, `orientation` | `"A8"`, `auto`, `"landscape"` | see Card sizes |
 
 Helpers: `small[…]` (72 %), `tiny[…]` (60 %), `block-left[…]` (left-aligned,
@@ -161,9 +187,9 @@ sheets, US index cards, upright cards of your own size.
   GitHub then creates the release with the manual attached
   (`.github/workflows/release.yml`).
 - To use a local copy, link this folder as
-  `~/Library/Application Support/typst/packages/local/flipside/0.1.0` (Linux:
-  `~/.local/share/typst/packages/local/flipside/0.1.0`) and import
-  `@local/flipside:0.1.0`.
+  `~/Library/Application Support/typst/packages/local/flipside/0.2.0` (Linux:
+  `~/.local/share/typst/packages/local/flipside/0.2.0`) and import
+  `@local/flipside:0.2.0`.
 
 ## Author and license
 

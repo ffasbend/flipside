@@ -9,7 +9,7 @@ description = "Double-sided flash cards that line up when printed duplex: DIN, U
 keywords = ["flashcards", "cards", "duplex", "learning", "education", "vocabulary", "index cards", "csv"]
 categories = ["components", "layout"]
 disciplines = ["education"]
-compiler = "0.13.0"
+compiler = "0.15.1"
 exclude = ["thumbnail-list.png", "examples", "docs", "tests", "*.pdf"]
 
 [template]

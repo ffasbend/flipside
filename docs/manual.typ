@@ -102,6 +102,9 @@ behind its question when the sheet is turned over like a book page.
 
 == Installing
 
+flipside needs Typst 0.15.1 or newer (`typst --version`; the Typst web app is
+always up to date).
+
 Once the package is on Typst Universe, nothing has to be installed: the import
 below downloads it the first time you compile.
 

@@ -5,8 +5,9 @@
 #   tests/run.sh --update   make the reference images anew (check them first!)
 #
 # Uses `typst` from the PATH, or the one in $TYPST. The reference images in
-# tests/ref were made with Typst 0.15.1 (the package also works with 0.13); another Typst version may draw some
-# pixels differently: then look at tests/out and run with --update.
+# tests/ref were made with Typst 0.15.1 (flipside needs 0.15.1 or newer); another
+# Typst version may draw some pixels differently: then look at tests/out and
+# run with --update.
 #
 # What is tested:
 #   1. every example, the template and the test cases compile without errors

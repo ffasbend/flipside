@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Needs Typst 0.15.1 or newer (`compiler = "0.15.1"`), the version it is
+  tested with.
+
 ## 0.2.0
 
 - **Both directions:** `dir: "forward"` (default), `"reverse"` or `"both"`, for

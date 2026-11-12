@@ -1,6 +1,6 @@
 // The flipside manual. Build it with docs/build.sh (renders the images first).
 
-#let version = "0.2.0"
+#let version = "0.2.1"
 
 #set document(title: "flipside – manual", author: "Frank Fasbender")
 #set page(paper: "a4", margin: (x: 22mm, top: 22mm, bottom: 24mm),
@@ -105,25 +105,21 @@ behind its question when the sheet is turned over like a book page.
 flipside needs Typst 0.15.1 or newer (`typst --version`; the Typst web app is
 always up to date).
 
-Once the package is on Typst Universe, nothing has to be installed: the import
+Nothing has to be installed: flipside is on Typst Universe, and the import
 below downloads it the first time you compile.
 
 ```typ
-#import "@preview/flipside:0.2.0": *
+#import "@preview/flipside:0.2.1": *
 ```
 
 To start a new deck from the template:
 
 ```sh
-typst init @preview/flipside:0.2.0 my-cards
+typst init @preview/flipside:0.2.1 my-cards
 ```
 
-#tip[*Before publication, or to use your own copy:* put the package folder into
-Typst's local package folder (macOS:
-`~/Library/Application Support/typst/packages/local/flipside/0.2.0`, Linux:
-`~/.local/share/typst/packages/local/flipside/0.2.0`) and import
-`@local/flipside:0.2.0` instead. A relative import such as
-`#import "flipside/lib.typ": *` works too, and also in the Typst web app.]
+#tip[*Without internet:* a copy of the package in a folder `flipside` next to
+your deck works too, with `#import "flipside/lib.typ": *`.]
 
 == A first deck
 
@@ -610,8 +606,9 @@ justified). *Items, hints and notes* (@roles): `all`, `any`, `q-only`,
 
 = Examples <examples>
 
-The folder `examples` of the package holds complete decks. Compile them from
-the package folder with `typst compile --root . examples/<name>.typ`.
+The folder #link("https://github.com/ffasbend/flipside/tree/v" + version + "/examples")[`examples`]
+of the repository holds complete decks. Download one (with `vocabulary.csv`
+for the first) and compile it as it is, e.g. `typst compile vocabulary.typ`.
 
 #let example(name, title, body) = block(breakable: false, {
   heading(level: 2, title)

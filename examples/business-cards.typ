@@ -1,8 +1,8 @@
 // Chemical elements on perforated business-card sheets (85 × 54 mm, 10 per
 // A4): no cutting, just tear the cards apart. Colour per group of elements.
 //
-//   typst compile --root .. business-cards.typ
-#import "../lib.typ": *
+//   typst compile business-cards.typ
+#import "@preview/flipside:0.2.1": *
 
 #let element(symbol, name, number) = (
   q: [#text(size: 2.4em, weight: "bold", symbol)],

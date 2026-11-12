@@ -1,10 +1,8 @@
-# flipside
-
 Double-sided flash cards that line up when printed. Write the questions and
 answers, print the PDF double-sided, cut along the lines: every card has its
 question on the front and its answer on the back.
 
-![A sheet of DIN A8 cards](thumbnail.png)
+![A sheet of DIN A8 cards](https://raw.githubusercontent.com/ffasbend/flipside/v0.2.1/thumbnail.png)
 
 - **Any card size:** DIN A8, A7, A6, A5, US index cards (3×5, 4×6 in),
   business cards on perforated sheets, or your own size; A4 or Letter paper;
@@ -21,7 +19,7 @@ question on the front and its answer on the back.
   **hints** shown only as question or only as answer (`[? …]`, `[! …]`), e.g.
   for vocabulary.
 
-The [manual](https://github.com/ffasbend/flipside/releases/download/v0.2.0/flipside-manual-0.2.0.pdf)
+The [manual](https://github.com/ffasbend/flipside/releases/download/v0.2.1/flipside-manual-0.2.1.pdf)
 (PDF, attached to each [release](https://github.com/ffasbend/flipside/releases)) explains
 everything, with many examples.
 
@@ -30,7 +28,7 @@ Needs Typst 0.15.1 or newer.
 ## Getting started
 
 ```typst
-#import "@preview/flipside:0.2.0": *
+#import "@preview/flipside:0.2.1": *
 
 #flipside((
   (q: [France], a: [Paris]),
@@ -42,7 +40,7 @@ Needs Typst 0.15.1 or newer.
 or start from the template:
 
 ```sh
-typst init @preview/flipside:0.2.0 my-cards
+typst init @preview/flipside:0.2.1 my-cards
 ```
 
 Page 1 holds the questions with cutting lines, page 2 the answers, mirrored so
@@ -56,7 +54,7 @@ portrait sheet.
 typst compile --input layout=list cards.typ cards-list.pdf
 ```
 
-![The list](https://raw.githubusercontent.com/ffasbend/flipside/main/thumbnail-list.png)
+![The list](https://raw.githubusercontent.com/ffasbend/flipside/v0.2.1/thumbnail-list.png)
 
 ## Themes, header and footer
 
@@ -174,24 +172,14 @@ justified).
 
 ## Examples
 
-The [examples](https://github.com/ffasbend/flipside/tree/main/examples) folder holds complete decks: a German–French
+The [examples](https://github.com/ffasbend/flipside/tree/v0.2.1/examples) folder of the repository holds complete decks: a German–French
 vocabulary from CSV learnt both ways with hints, maths with formulas, chemical elements on business-card
 sheets, US index cards, upright cards of your own size.
 
 ## Development
 
-- `tests/run.sh` compiles the examples, the template and test decks in every
-  size and layout, checks the error messages and compares every page with the
-  reference images (`--update` makes them anew).
-- `docs/build.sh` renders the pictures and builds `docs/manual.pdf`.
-- A new version: set `version` in `typst.toml` (and the README links), build
-  the manual, commit, then `git tag v<version> && git push origin v<version>`.
-  GitHub then creates the release with the manual attached
-  (`.github/workflows/release.yml`).
-- To use a local copy, link this folder as
-  `~/Library/Application Support/typst/packages/local/flipside/0.2.0` (Linux:
-  `~/.local/share/typst/packages/local/flipside/0.2.0`) and import
-  `@local/flipside:0.2.0`.
+Tests, the manual's sources and how a version is released: see
+[CONTRIBUTING.md](https://github.com/ffasbend/flipside/blob/v0.2.1/CONTRIBUTING.md) in the repository.
 
 ## Author and license
 

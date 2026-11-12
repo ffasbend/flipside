@@ -1,9 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
+- First version on Typst Universe.
 - Needs Typst 0.15.1 or newer (`compiler = "0.15.1"`), the version it is
   tested with.
+- The examples import `@preview/flipside`; the README and the manual link to
+  the examples and the manual of this version on GitHub; development notes
+  moved to `CONTRIBUTING.md`.
 
 ## 0.2.0
 

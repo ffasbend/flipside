@@ -1,8 +1,8 @@
 // Maths: formulas, several lines per side, small print, left-aligned answers.
 // DIN A8 cards (16 per A4 sheet); sides that are too large are shrunk.
 //
-//   typst compile --root .. maths.typ
-#import "../lib.typ": *
+//   typst compile maths.typ
+#import "@preview/flipside:0.2.1": *
 
 #let number(c) = if c.number != none [#c.number/#c.total]
 

@@ -1,7 +1,7 @@
 // US history on 3 × 5 inch index cards, printed on Letter paper (4 per sheet).
 //
-//   typst compile --root .. us-index-cards.typ
-#import "../lib.typ": *
+//   typst compile us-index-cards.typ
+#import "@preview/flipside:0.2.1": *
 
 #let number(c) = if c.number != none [#c.number/#c.total]
 

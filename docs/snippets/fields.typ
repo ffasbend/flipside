@@ -1,4 +1,4 @@
-#import "@preview/flipside:0.2.0": *
+#import "@preview/flipside:0.2.1": *
 
 #let number(c) = if c.number != none [#c.number/#c.total]
 

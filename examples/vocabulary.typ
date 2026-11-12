@@ -11,9 +11,9 @@
 // - an empty cell keeps the value of the row above, for "theme" and "dir"
 //   alike: that is why "die Möbel" is the last row.
 //
-//   typst compile --root .. vocabulary.typ
-//   typst compile --root .. --input layout=list vocabulary.typ vocabulary-list.pdf
-#import "../lib.typ": *
+//   typst compile vocabulary.typ
+//   typst compile --input layout=list vocabulary.typ vocabulary-list.pdf
+#import "@preview/flipside:0.2.1": *
 
 #let number(c) = if c.number != none [#c.number/#c.total]
 // The direction of a printed card, for its header

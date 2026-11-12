@@ -102,7 +102,7 @@ behind its question when the sheet is turned over like a book page.
 
 == Installing
 
-flipside needs Typst 0.15.1 or newer (`typst --version`; the Typst web app is
+flipside needs Typst 0.15.0 or newer (`typst --version`; the Typst web app is
 always up to date).
 
 Nothing has to be installed: flipside is on Typst Universe, and the import

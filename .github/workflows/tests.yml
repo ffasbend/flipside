@@ -2,7 +2,7 @@
 # template and the test decks compile without errors or warnings, the error
 # messages are right, and every page looks exactly like its reference image.
 #
-# Typst is the version in typst.toml (`compiler`), on ARM Linux like the dev
+# Typst is the version tests/ref was made with (0.15.1), on ARM Linux like the dev
 # container the reference images were made in, so the pixels match. When a
 # test fails, the pages it made are attached to the run (tests-out).
 name: Tests
@@ -18,9 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The version tests/ref was made with (the package itself needs `compiler`
+      # in typst.toml or newer; another version can differ by a few pixels).
       - name: Install Typst
         run: |
-          version=$(sed -n 's/^compiler = "\(.*\)"/\1/p' typst.toml)
+          version=0.15.1
           curl -sSfL "https://github.com/typst/typst/releases/download/v$version/typst-aarch64-unknown-linux-musl.tar.xz" | tar -xJ
           echo "$PWD/typst-aarch64-unknown-linux-musl" >> "$GITHUB_PATH"
 

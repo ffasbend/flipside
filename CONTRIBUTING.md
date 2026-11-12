@@ -22,6 +22,6 @@ Questions, ideas and bug reports: please open an
 
 The package is published in [typst/packages](https://github.com/typst/packages)
 as `packages/preview/flipside/<version>/`. Only these files go there:
-`typst.toml`, `lib.typ`, `README.md`, `LICENSE`, `CHANGELOG.md`, `template/`
+`typst.toml`, `lib.typ`, `README.md`, `LICENSE`, `LICENSE-MIT-0`, `CHANGELOG.md`, `template/`
 and `thumbnail.png` (no tests, build scripts, examples or manual: the README
 links to them in this repository, at the version's tag).
